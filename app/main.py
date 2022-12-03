@@ -15,6 +15,8 @@ import io
 import base64
 import sys
 from base64 import decodebytes
+import subprocess
+from subprocess import Popen, PIPE
 
 # Use load_env to trace the path of .env:
 load_dotenv('.env')
@@ -68,3 +70,13 @@ def mrz():
   date_time = datetime.datetime(year, month, day)
   age_in_epochs = int((time.mktime(date_time.timetuple())))
   return {"birthyear": year}
+
+@app.route("/zk_age", methods = ['POST'])
+def zk_age():
+  # body = request.json
+  session = Popen(['python3','/home/ubuntu/workspace/zk-scaffold/run.py'], stdout=PIPE, stderr=PIPE)
+  stdout, stderr = session.communicate()
+  if stderr:
+    raise Exception("Error "+str(stderr))
+  print(stdout.decode('utf-8'))
+  return {"ok": True}
